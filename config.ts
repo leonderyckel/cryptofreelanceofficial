@@ -7,11 +7,13 @@ import { alchemy, arbitrumSepolia } from "@account-kit/infra";
 import { QueryClient } from "@tanstack/react-query";
 
 const API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
+console.log("API_KEY:", API_KEY ? "Set" : "Not set");
 if (!API_KEY) {
   throw new Error("NEXT_PUBLIC_ALCHEMY_API_KEY is not set");
 }
 
 const SPONSORSHIP_POLICY_ID = process.env.NEXT_PUBLIC_ALCHEMY_POLICY_ID;
+console.log("POLICY_ID:", SPONSORSHIP_POLICY_ID ? "Set" : "Not set");
 if (!SPONSORSHIP_POLICY_ID) {
   throw new Error("NEXT_PUBLIC_ALCHEMY_POLICY_ID is not set");
 }
