@@ -43,7 +43,7 @@ export default function UserInfo() {
         uo: {
           target: client.account.address,
           data: "0x",
-          value: 0n,
+          value: BigInt(0),
         },
       });
       console.log("Wallet deployed:", hash);
