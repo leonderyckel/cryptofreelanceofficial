@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd my-smart-wallets-app && npm run build",
+  "outputDirectory": "my-smart-wallets-app/.next",
+  "installCommand": "cd my-smart-wallets-app && npm install"
+}
