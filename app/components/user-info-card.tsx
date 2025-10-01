@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ExternalLink, Copy } from "lucide-react";
+import { ExternalLink, Copy, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +20,7 @@ import { useUser, useSmartAccountClient } from "@account-kit/react";
 
 export default function UserInfo() {
   const [isCopied, setIsCopied] = useState(false);
+  const [isDeploying, setIsDeploying] = useState(false);
   const user = useUser();
   const userEmail = user?.email ?? "anon";
   const { client } = useSmartAccountClient({});
@@ -31,6 +32,25 @@ export default function UserInfo() {
     navigator.clipboard.writeText(client?.account?.address ?? "");
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const deployWallet = async () => {
+    if (!client) return;
+    setIsDeploying(true);
+    try {
+      // Send a minimal transaction to deploy the wallet
+      const hash = await client.sendUserOperation({
+        uo: {
+          target: client.account.address,
+          data: "0x",
+          value: 0n,
+        },
+      });
+      console.log("Wallet deployed:", hash);
+    } catch (error) {
+      console.error("Failed to deploy wallet:", error);
+    }
+    setIsDeploying(false);
   };
 
   return (
@@ -54,10 +74,33 @@ export default function UserInfo() {
               Smart wallet address
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="font-mono text-xs py-1 px-2">
-              {walletAddress || "No wallet address"}
-            </Badge>
+          {!walletAddress ? (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Wallet not deployed yet</p>
+              <Button
+                onClick={deployWallet}
+                disabled={isDeploying}
+                size="sm"
+                className="w-full"
+              >
+                {isDeploying ? (
+                  <>
+                    <Wallet className="mr-2 h-4 w-4 animate-spin" />
+                    Deploying...
+                  </>
+                ) : (
+                  <>
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Deploy Wallet
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="font-mono text-xs py-1 px-2">
+                {formatAddress(walletAddress)}
+              </Badge>
             <TooltipProvider>
               <Tooltip open={isCopied}>
                 <TooltipTrigger asChild>
@@ -92,6 +135,7 @@ export default function UserInfo() {
               <ExternalLink className="h-3.5 w-3.5" />
             </Button>
           </div>
+          )}
         </div>
       </CardContent>
     </Card>
