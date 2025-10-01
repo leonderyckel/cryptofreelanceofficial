@@ -23,6 +23,9 @@ export default function UserInfo() {
   const user = useUser();
   const userEmail = user?.email ?? "anon";
   const { client } = useSmartAccountClient({});
+  
+  const walletAddress = client?.account?.address;
+  console.log("Wallet address:", walletAddress);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(client?.account?.address ?? "");
@@ -53,7 +56,7 @@ export default function UserInfo() {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="font-mono text-xs py-1 px-2">
-              {formatAddress(client?.account?.address ?? "")}
+              {walletAddress || "No wallet address"}
             </Badge>
             <TooltipProvider>
               <Tooltip open={isCopied}>
