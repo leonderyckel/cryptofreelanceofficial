@@ -1,5 +1,7 @@
 {
-  "buildCommand": "cd my-smart-wallets-app && npm run build",
-  "outputDirectory": "my-smart-wallets-app/.next",
-  "installCommand": "cd my-smart-wallets-app && npm install"
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs"
 }
