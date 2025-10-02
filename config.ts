@@ -24,14 +24,17 @@ const uiConfig: AlchemyAccountsUIConfig = {
     sections: [
       [{ type: "email" }],
       [
-        { type: "passkey" },
         { type: "social", authProviderId: "google", mode: "popup" },
         { type: "social", authProviderId: "facebook", mode: "popup" },
-        { type: "social", authProviderId: "apple", mode: "popup" },
+      ],
+      [
+        { type: "passkey" },
+        { type: "external_wallets" },
       ],
     ],
-    addPasskeyOnSignup: false,
+    addPasskeyOnSignup: true,
   },
+  supportUrl: "https://alchemy.com/support",
 };
 
 export const config = createConfig(
