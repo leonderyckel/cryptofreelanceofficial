@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useAuthModal } from "@account-kit/react";
+import { SocialLoginButtons } from "./social-login-buttons";
 export default function LoginPage() {
   const { openAuthModal } = useAuthModal();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -42,6 +43,24 @@ export default function LoginPage() {
       </CardHeader>
 
       <CardContent className={cn("space-y-6 pb-8")}>
+        {/* Social Login Options */}
+        <div className="space-y-4">
+          <SocialLoginButtons />
+        </div>
+        
+        {/* Divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-300 dark:border-gray-600" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        {/* Default Auth Modal Button */}
         <Button
           size="lg"
           onClick={() => openAuthModal()}
@@ -57,10 +76,10 @@ export default function LoginPage() {
           {isLoggingIn ? (
             <>
               <Loader2 className={cn("animate-spin -ml-1 mr-3 h-5 w-5")} />
-              Log in
+              Email or Passkey
             </>
           ) : (
-            <>Login</>
+            <>Email or Passkey</>
           )}
         </Button>
       </CardContent>
