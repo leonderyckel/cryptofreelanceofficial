@@ -6,9 +6,12 @@ import NftMintCard from "./components/nft-mint-card";
 import LoginCard from "./components/login-card";
 import Header from "./components/header";
 import LearnMore from "./components/learn-more";
+import DebugConnection from "./components/debug-connection";
 
 export default function Home() {
   const signerStatus = useSignerStatus();
+  
+  console.log("Signer Status:", signerStatus);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -25,7 +28,10 @@ export default function Home() {
             </div>
           ) : (
             <div className="flex justify-center items-center h-full pb-[4rem]">
-              <LoginCard />
+              <div className="flex flex-col gap-4 items-center">
+                <LoginCard />
+                <DebugConnection />
+              </div>
             </div>
           )}
         </main>
