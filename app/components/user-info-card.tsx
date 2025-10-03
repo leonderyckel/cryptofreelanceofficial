@@ -22,13 +22,16 @@ export default function UserInfo() {
   const [isCopied, setIsCopied] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const user = useUser();
-  const userEmail = user?.email ?? "anon";
+  const userEmail = user?.email ?? (user?.address ? formatAddress(user.address) : "anon");
   const { client } = useSmartAccountClient({});
   const { openAuthModal } = useAuthModal();
   
   const walletAddress = client?.account?.address;
   console.log("Wallet address:", walletAddress);
   console.log("User object:", user);
+  
+  // For EOA connections, show the connected address
+  const userDisplayName = user?.email || (user?.address ? formatAddress(user.address) : "anon");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(client?.account?.address ?? "");
@@ -68,7 +71,7 @@ export default function UserInfo() {
           <p className="text-sm font-medium text-muted-foreground mb-1">
             User ID
           </p>
-          <p className="font-medium">{userEmail}</p>
+          <p className="font-medium">{userDisplayName}</p>
         </div>
         
         {/* Show connection type info */}
@@ -77,9 +80,21 @@ export default function UserInfo() {
             <p className="text-sm font-medium text-muted-foreground mb-1">
               Login Method
             </p>
-            <Badge variant="secondary" className="text-xs">
-              {user.type || "Smart Account"}
-            </Badge>
+            <div className="flex flex-col gap-2">
+              <Badge variant="secondary" className="text-xs w-fit">
+                {user.type === 'eoa' ? 'MetaMask (EOA)' : user.type || "Smart Account"}
+              </Badge>
+              {user.type === 'eoa' && (
+                <div className="text-xs bg-amber-50 dark:bg-amber-950/20 p-2 rounded border border-amber-200 dark:border-amber-800">
+                  <p className="text-amber-700 dark:text-amber-300">
+                    <strong>Your MetaMask:</strong> {formatAddress(user.address)}
+                  </p>
+                  <p className="text-amber-600 dark:text-amber-400 mt-1">
+                    This acts as owner of your Smart Wallet below ↓
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         )}
         <div>
@@ -89,8 +104,15 @@ export default function UserInfo() {
             </p>
           </div>
           {!walletAddress ? (
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Wallet not deployed yet</p>
+            <div className="space-y-3">
+              <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                  <strong>Smart Wallet Status:</strong> Not deployed yet
+                </p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">
+                  Your MetaMask acts as the owner. Deploy your Smart Wallet to unlock features like gas sponsorship and batch transactions.
+                </p>
+              </div>
               <Button
                 onClick={deployWallet}
                 disabled={isDeploying}
@@ -100,12 +122,12 @@ export default function UserInfo() {
                 {isDeploying ? (
                   <>
                     <Wallet className="mr-2 h-4 w-4 animate-spin" />
-                    Deploying...
+                    Deploying Smart Wallet...
                   </>
                 ) : (
                   <>
                     <Wallet className="mr-2 h-4 w-4" />
-                    Deploy Wallet
+                    Deploy Smart Wallet
                   </>
                 )}
               </Button>

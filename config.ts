@@ -20,33 +20,14 @@ if (!SPONSORSHIP_POLICY_ID) {
   throw new Error("NEXT_PUBLIC_ALCHEMY_POLICY_ID is not set");
 }
 
-// Configuration for external wallets following documentation exactly
+// External wallets configuration exactly as per Alchemy documentation
 export const externalWalletsConfig = configForExternalWallets({
   wallets: ["wallet_connect", "metamask", "coinbase wallet"],
-  chainType: ["evm"], // Only EVM for now
+  chainType: ["evm"],
   walletConnectProjectId: "2f5a2c5c8c1d4b5e3f6a7c8d9e0f1a2b",
   hideMoreButton: false,
   numFeaturedWallets: 3,
 });
-
-const uiConfig: AlchemyAccountsUIConfig = {
-  illustrationStyle: "outline",
-  auth: {
-    sections: [
-      [{ type: "email" }],
-      [
-        { type: "social", authProviderId: "google", mode: "popup" },
-        { type: "social", authProviderId: "facebook", mode: "popup" },
-      ],
-      [
-        { type: "passkey" },
-        { type: "external_wallets", ...externalWalletsConfig.uiConfig },
-      ],
-    ],
-    addPasskeyOnSignup: true,
-  },
-  supportUrl: "https://alchemy.com/support",
-};
 
 export const config = createConfig(
   {
@@ -55,13 +36,28 @@ export const config = createConfig(
     ssr: true,
     storage: cookieStorage,
     enablePopupOauth: true,
-    policyId: SPONSORSHIP_POLICY_ID,
-    // Remove connectors due to type conflicts
     sessionConfig: {
-      expirationTimeMs: 1000 * 60 * 60, // 60 minutes
+      expirationTimeMs: 1000 * 60 * 60, // 60 minutes (as per docs)
     },
+    policyId: SPONSORSHIP_POLICY_ID,
+    // connectors: externalWalletsConfig.connectors, // Commented due to type conflicts
   },
-  uiConfig
+  {
+    illustrationStyle: "outline",
+    auth: {
+      sections: [
+        [{ type: "email" }],
+        [
+          { type: "passkey" },
+          { type: "social", authProviderId: "google", mode: "popup" },
+          { type: "social", authProviderId: "facebook", mode: "popup" },
+        ],
+        [{ type: "external_wallets", ...externalWalletsConfig.uiConfig }],
+      ],
+      addPasskeyOnSignup: true,
+    },
+    supportUrl: "https://alchemy.com/support",
+  }
 );
 
 export const queryClient = new QueryClient();
