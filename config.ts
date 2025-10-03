@@ -2,6 +2,7 @@ import {
   AlchemyAccountsUIConfig,
   cookieStorage,
   createConfig,
+  configForExternalWallets,
 } from "@account-kit/react";
 import { alchemy, arbitrumSepolia } from "@account-kit/infra";
 import { QueryClient } from "@tanstack/react-query";
@@ -18,6 +19,15 @@ if (!SPONSORSHIP_POLICY_ID) {
   throw new Error("NEXT_PUBLIC_ALCHEMY_POLICY_ID is not set");
 }
 
+// Configuration for external wallets (MetaMask, Coinbase Wallet, etc.)
+const externalWalletsConfig = configForExternalWallets({
+  wallets: ["metamask", "coinbase wallet", "wallet_connect"],
+  chainType: ["evm"],
+  walletConnectProjectId: "2f5a2c5c8c1d4b5e3f6a7c8d9e0f1a2b", // Replace with your actual WalletConnect project ID
+  hideMoreButton: false,
+  numFeaturedWallets: 3,
+});
+
 const uiConfig: AlchemyAccountsUIConfig = {
   illustrationStyle: "outline",
   auth: {
@@ -29,7 +39,12 @@ const uiConfig: AlchemyAccountsUIConfig = {
       ],
       [
         { type: "passkey" },
-        { type: "external_wallets" },
+        { 
+          type: "external_wallets",
+          walletConnect: {
+            projectId: "2f5a2c5c8c1d4b5e3f6a7c8d9e0f1a2b"
+          }
+        },
       ],
     ],
     addPasskeyOnSignup: true,

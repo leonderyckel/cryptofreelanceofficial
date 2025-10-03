@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatAddress } from "@/lib/utils";
-import { useUser, useSmartAccountClient } from "@account-kit/react";
+import { useUser, useSmartAccountClient, useAuthModal } from "@account-kit/react";
 
 export default function UserInfo() {
   const [isCopied, setIsCopied] = useState(false);
@@ -24,9 +24,11 @@ export default function UserInfo() {
   const user = useUser();
   const userEmail = user?.email ?? "anon";
   const { client } = useSmartAccountClient({});
+  const { openAuthModal } = useAuthModal();
   
   const walletAddress = client?.account?.address;
   console.log("Wallet address:", walletAddress);
+  console.log("User object:", user);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(client?.account?.address ?? "");
@@ -64,10 +66,22 @@ export default function UserInfo() {
       <CardContent className="space-y-4">
         <div>
           <p className="text-sm font-medium text-muted-foreground mb-1">
-            Email
+            User ID
           </p>
           <p className="font-medium">{userEmail}</p>
         </div>
+        
+        {/* Show connection type info */}
+        {user && (
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-1">
+              Login Method
+            </p>
+            <Badge variant="secondary" className="text-xs">
+              {user.type || "Smart Account"}
+            </Badge>
+          </div>
+        )}
         <div>
           <div className="flex items-center gap-2 mb-1">
             <p className="text-sm font-medium text-muted-foreground">
