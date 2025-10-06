@@ -15,6 +15,8 @@ import MultisigManager from "./components/multisig-manager";
 import SessionKeysManager from "./components/session-keys-manager";
 import TestTransactions from "./components/test-transactions";
 import WalletBalance from "./components/wallet-balance";
+import SimpleTransactionTest from "./components/simple-transaction-test";
+import TransactionDebugger from "./components/transaction-debugger";
 
 export default function Home() {
   const signerStatus = useSignerStatus();
@@ -148,11 +150,17 @@ export default function Home() {
               </TabsContent>
 
               <TabsContent value="test" className="animate-slide-up">
-                <div className="grid gap-8 md:grid-cols-[2fr_1fr]">
-                  <TestTransactions />
-                  <div className="flex flex-col gap-8">
-                    <UserInfoCard />
-                    <WalletBalance />
+                <div className="space-y-8">
+                  <div className="grid gap-8 md:grid-cols-[1fr_1fr]">
+                    <TransactionDebugger />
+                    <SimpleTransactionTest />
+                  </div>
+                  <div className="grid gap-8 md:grid-cols-[2fr_1fr]">
+                    <TestTransactions />
+                    <div className="flex flex-col gap-8">
+                      <UserInfoCard />
+                      <WalletBalance />
+                    </div>
                   </div>
                 </div>
               </TabsContent>

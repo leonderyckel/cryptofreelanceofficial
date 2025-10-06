@@ -1,4 +1,13 @@
-# 🧪 Guide de Test - Application Alchemy Smart Wallet
+# 🧪 Guide de Test - Application Alchemy Smart Wallet (MISE À JOUR)
+
+## 🆕 NOUVEAUX OUTILS DE TEST DISPONIBLES
+
+### 🔍 **Transaction Diagnostics** - Résout les erreurs 400 automatiquement
+### 🔧 **Simple Transaction Test** - Tests sans gas sponsorship
+### 📊 **Error Analysis** - Messages d'erreur détaillés
+### 💡 **Smart Recommendations** - Solutions personnalisées
+
+---
 
 ## 📋 Comment tester toutes les fonctionnalités
 
