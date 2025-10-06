@@ -8,16 +8,28 @@ import { AlertTriangle, CheckCircle, XCircle, Info, ExternalLink } from "lucide-
 import { useSmartAccountClient, useUser } from "@account-kit/react";
 import { useToast } from "@/lib/hooks/use-toast";
 
+interface DiagnosticCheck {
+  name: string;
+  status: "pass" | "fail" | "warning";
+  message: string;
+  details?: any;
+}
+
+interface DiagnosticResults {
+  timestamp: string;
+  checks: DiagnosticCheck[];
+}
+
 export default function TransactionDebugger() {
   const { client } = useSmartAccountClient({});
   const user = useUser();
   const { toast } = useToast();
-  const [diagnostics, setDiagnostics] = useState<any>(null);
+  const [diagnostics, setDiagnostics] = useState<DiagnosticResults | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   const runDiagnostics = async () => {
     setIsRunning(true);
-    const results = {
+    const results: DiagnosticResults = {
       timestamp: new Date().toISOString(),
       checks: [],
     };
@@ -164,7 +176,7 @@ export default function TransactionDebugger() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: "pass" | "fail" | "warning") => {
     const variants = {
       pass: "default" as const,
       warning: "secondary" as const,
@@ -251,7 +263,7 @@ export default function TransactionDebugger() {
                   size="sm"
                   className="hover-lift"
                   onClick={() => window.open(
-                    `${client.chain.blockExplorers.default.url}/address/${client.account.address}`,
+                    `${client.chain?.blockExplorers?.default?.url}/address/${client.account?.address}`,
                     "_blank"
                   )}
                 >
