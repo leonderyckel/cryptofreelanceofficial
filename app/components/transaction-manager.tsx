@@ -195,23 +195,36 @@ export default function TransactionManager() {
         }),
       });
 
-      console.log("Batch transactions sent:", hash);
+      console.log('Batch transactions sent successfully:', hash);
       
-      // Add to pending transactions
-      setPendingTxs(prev => [...prev, {
+      // Wait for transaction receipt
+      const receipt = await client.waitForUserOperationTransaction(hash);
+      console.log('Batch confirmed:', receipt);
+      
+      // Add to transaction history
+      setTxHistory(prev => [{
         hash,
         type: 'batch',
-        status: 'pending',
+        status: 'confirmed',
         timestamp: Date.now(),
-        operations: userOps,
-        count: userOps.length,
-      }]);
+        receipt,
+        batchSize: userOps.length,
+        transactions: userOps,
+      }, ...prev]);
 
-      // Reset form
+      // Reset batch
       setBatchTxs([{ id: "1", to: "", value: "", data: "0x", description: "" }]);
       
-    } catch (error) {
-      console.error("Failed to send batch transactions:", error);
+    } catch (error: any) {
+      console.error('Batch transaction failed:', error);
+      setTxHistory(prev => [{
+        hash: 'failed-batch-' + Date.now(),
+        type: 'batch',
+        status: 'failed',
+        timestamp: Date.now(),
+        error: error.message || 'Unknown error',
+        batchSize: validTxs.length,
+      }, ...prev]);
     }
     setIsLoading(false);
   };

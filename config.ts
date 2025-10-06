@@ -40,7 +40,13 @@ export const config = createConfig(
       expirationTimeMs: 1000 * 60 * 60 * 24, // 24 hours for better UX
     },
     policyId: SPONSORSHIP_POLICY_ID,
-    // connectors: externalWalletsConfig.connectors, // Commented due to type conflicts
+    connectors: externalWalletsConfig.connectors,
+    // Enhanced EOA support
+    smartAccountConfig: {
+      gasManagerConfig: {
+        policyId: SPONSORSHIP_POLICY_ID,
+      },
+    },
   },
   {
     illustrationStyle: "outline",

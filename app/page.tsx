@@ -49,53 +49,53 @@ export default function Home() {
                   </div>
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-6 bg-card rounded-lg border">
-                        <h3 className="font-semibold mb-2">Quick Actions</h3>
+                      <div className="p-6 card-modern">
+                        <h3 className="font-semibold mb-2 gradient-text">⚡ Quick Actions</h3>
                         <p className="text-sm text-muted-foreground mb-4">
                           Access commonly used features
                         </p>
                         <div className="space-y-2">
                           <button 
                             onClick={() => setActiveTab("transactions")}
-                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
                           >
                             💸 Send Transactions
                           </button>
                           <button 
                             onClick={() => setActiveTab("assets")}
-                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
                           >
                             🎨 Manage NFTs & Tokens
                           </button>
                           <button 
                             onClick={() => setActiveTab("automation")}
-                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
                           >
                             🔐 Session Keys
                           </button>
                         </div>
                       </div>
-                      <div className="p-6 bg-card rounded-lg border">
-                        <h3 className="font-semibold mb-2">Advanced Features</h3>
+                      <div className="p-6 card-modern">
+                        <h3 className="font-semibold mb-2 gradient-text">🚀 Advanced Features</h3>
                         <p className="text-sm text-muted-foreground mb-4">
                           Explore powerful wallet capabilities
                         </p>
                         <div className="space-y-2">
                           <button 
                             onClick={() => setActiveTab("multisig")}
-                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
                           >
                             🛡️ Multisig Governance
                           </button>
                           <button 
                             onClick={() => setActiveTab("transactions")}
-                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
                           >
                             ⚡ Batch Transactions
                           </button>
                           <button 
                             onClick={() => setActiveTab("transactions")}
-                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
                           >
                             💨 Gas Sponsorship
                           </button>
@@ -106,23 +106,23 @@ export default function Home() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="transactions">
+              <TabsContent value="transactions" className="animate-slide-up">
                 <TransactionManager />
               </TabsContent>
 
-              <TabsContent value="assets">
+              <TabsContent value="assets" className="animate-slide-up">
                 <NFTTokenManager />
               </TabsContent>
 
-              <TabsContent value="multisig">
+              <TabsContent value="multisig" className="animate-slide-up">
                 <MultisigManager />
               </TabsContent>
 
-              <TabsContent value="automation">
+              <TabsContent value="automation" className="animate-slide-up">
                 <SessionKeysManager />
               </TabsContent>
 
-              <TabsContent value="mint">
+              <TabsContent value="mint" className="animate-slide-up">
                 <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
                   <div className="flex flex-col gap-8">
                     <UserInfoCard />
@@ -133,9 +133,11 @@ export default function Home() {
             </Tabs>
           ) : (
             <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
-              <div className="flex flex-col gap-4 items-center">
-                <LoginCard />
-                <DebugConnection />
+              <div className="flex flex-col gap-6 items-center animate-slide-up">
+                <div className="glass-effect p-8 rounded-2xl border shadow-2xl hover-lift max-w-md w-full">
+                  <LoginCard />
+                  <DebugConnection />
+                </div>
               </div>
             </div>
           )}
