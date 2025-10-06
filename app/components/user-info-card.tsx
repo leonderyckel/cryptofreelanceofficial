@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ExternalLink, Copy, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +32,32 @@ export default function UserInfo() {
   
   // For EOA connections, show the connected address
   const userDisplayName = user?.email || (user?.address ? formatAddress(user.address) : "anon");
+
+  // Auto-deploy Smart Wallet for EOA users
+  useEffect(() => {
+    const autoDeployWallet = async () => {
+      if (user?.type === 'eoa' && client && !walletAddress && !isDeploying) {
+        console.log("Auto-deploying Smart Wallet for EOA user...");
+        setIsDeploying(true);
+        try {
+          // Send a minimal transaction to deploy the wallet automatically
+          const hash = await client.sendUserOperation({
+            uo: {
+              target: client.account.address,
+              data: "0x",
+              value: BigInt(0),
+            },
+          });
+          console.log("Smart Wallet auto-deployed:", hash);
+        } catch (error) {
+          console.error("Failed to auto-deploy Smart Wallet:", error);
+        }
+        setIsDeploying(false);
+      }
+    };
+
+    autoDeployWallet();
+  }, [user, client, walletAddress, isDeploying]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(client?.account?.address ?? "");
@@ -107,30 +133,32 @@ export default function UserInfo() {
             <div className="space-y-3">
               <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                  <strong>Smart Wallet Status:</strong> Not deployed yet
+                  <strong>Smart Wallet Status:</strong> {isDeploying ? "Deploying..." : "Not deployed yet"}
                 </p>
                 <p className="text-xs text-blue-600 dark:text-blue-400">
-                  Your MetaMask acts as the owner. Deploy your Smart Wallet to unlock features like gas sponsorship and batch transactions.
+                  {isDeploying 
+                    ? "Automatically deploying your Smart Wallet. This will enable gas sponsorship and batch transactions."
+                    : "Your MetaMask acts as the owner. Deploy your Smart Wallet to unlock features like gas sponsorship and batch transactions."
+                  }
                 </p>
               </div>
-              <Button
-                onClick={deployWallet}
-                disabled={isDeploying}
-                size="sm"
-                className="w-full"
-              >
-                {isDeploying ? (
-                  <>
-                    <Wallet className="mr-2 h-4 w-4 animate-spin" />
-                    Deploying Smart Wallet...
-                  </>
-                ) : (
-                  <>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Deploy Smart Wallet
-                  </>
-                )}
-              </Button>
+              {!isDeploying && (
+                <Button
+                  onClick={deployWallet}
+                  disabled={isDeploying}
+                  size="sm"
+                  className="w-full"
+                >
+                  <Wallet className="mr-2 h-4 w-4" />
+                  Deploy Smart Wallet Manually
+                </Button>
+              )}
+              {isDeploying && (
+                <div className="flex items-center justify-center py-2">
+                  <Wallet className="mr-2 h-4 w-4 animate-spin" />
+                  <span className="text-sm text-muted-foreground">Auto-deploying Smart Wallet...</span>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex items-center gap-2">

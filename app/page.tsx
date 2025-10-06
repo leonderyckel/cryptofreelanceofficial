@@ -1,16 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useSignerStatus, useUser } from "@account-kit/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserInfoCard from "./components/user-info-card";
 import NftMintCard from "./components/nft-mint-card";
 import LoginCard from "./components/login-card";
 import Header from "./components/header";
 import LearnMore from "./components/learn-more";
 import DebugConnection from "./components/debug-connection";
+import TransactionManager from "./components/transaction-manager";
+import NFTTokenManager from "./components/nft-token-manager";
+import MultisigManager from "./components/multisig-manager";
+import SessionKeysManager from "./components/session-keys-manager";
 
 export default function Home() {
   const signerStatus = useSignerStatus();
   const user = useUser();
+  const [activeTab, setActiveTab] = useState("overview");
   
   console.log("Signer Status:", signerStatus);
   console.log("User:", user);
@@ -21,18 +28,111 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
       <Header />
-      <div className="bg-bg-main bg-cover bg-center bg-no-repeat h-[calc(100vh-4rem)]">
-        <main className="container mx-auto px-4 py-8 h-full">
+      <div className="bg-bg-main bg-cover bg-center bg-no-repeat min-h-[calc(100vh-4rem)]">
+        <main className="container mx-auto px-4 py-8">
           {isConnected ? (
-            <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
-              <div className="flex flex-col gap-8">
-                <UserInfoCard />
-                <LearnMore />
-              </div>
-              <NftMintCard />
-            </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-6 mb-8">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                <TabsTrigger value="assets">Assets</TabsTrigger>
+                <TabsTrigger value="multisig">Multisig</TabsTrigger>
+                <TabsTrigger value="automation">Automation</TabsTrigger>
+                <TabsTrigger value="mint">Mint NFT</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-8">
+                <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
+                  <div className="flex flex-col gap-8">
+                    <UserInfoCard />
+                    <LearnMore />
+                  </div>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-6 bg-card rounded-lg border">
+                        <h3 className="font-semibold mb-2">Quick Actions</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Access commonly used features
+                        </p>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab("transactions")}
+                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                          >
+                            💸 Send Transactions
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab("assets")}
+                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                          >
+                            🎨 Manage NFTs & Tokens
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab("automation")}
+                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                          >
+                            🔐 Session Keys
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-6 bg-card rounded-lg border">
+                        <h3 className="font-semibold mb-2">Advanced Features</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Explore powerful wallet capabilities
+                        </p>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab("multisig")}
+                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                          >
+                            🛡️ Multisig Governance
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab("transactions")}
+                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                          >
+                            ⚡ Batch Transactions
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab("transactions")}
+                            className="w-full text-left p-2 hover:bg-muted rounded text-sm"
+                          >
+                            💨 Gas Sponsorship
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="transactions">
+                <TransactionManager />
+              </TabsContent>
+
+              <TabsContent value="assets">
+                <NFTTokenManager />
+              </TabsContent>
+
+              <TabsContent value="multisig">
+                <MultisigManager />
+              </TabsContent>
+
+              <TabsContent value="automation">
+                <SessionKeysManager />
+              </TabsContent>
+
+              <TabsContent value="mint">
+                <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
+                  <div className="flex flex-col gap-8">
+                    <UserInfoCard />
+                  </div>
+                  <NftMintCard />
+                </div>
+              </TabsContent>
+            </Tabs>
           ) : (
-            <div className="flex justify-center items-center h-full pb-[4rem]">
+            <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
               <div className="flex flex-col gap-4 items-center">
                 <LoginCard />
                 <DebugConnection />
