@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -121,6 +121,37 @@ export default function TransactionManager() {
     ));
   };
 
+  // Validate address format
+  const isValidAddress = useCallback((address: string): boolean => {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  }, []);
+
+  // Validate and prepare transaction data
+  const prepareTransaction = useCallback((tx: { to: string; value: string; data: string }) => {
+    if (!isValidAddress(tx.to)) {
+      throw new Error(`Invalid recipient address: ${tx.to}`);
+    }
+    
+    if (!tx.data.startsWith('0x')) {
+      throw new Error('Transaction data must start with 0x');
+    }
+    
+    let value = BigInt(0);
+    if (tx.value && tx.value.trim() !== '') {
+      try {
+        value = parseEther(tx.value);
+      } catch (error) {
+        throw new Error(`Invalid value amount: ${tx.value}`);
+      }
+    }
+    
+    return {
+      target: tx.to as `0x${string}`,
+      data: tx.data as `0x${string}`,
+      value,
+    };
+  }, [isValidAddress]);
+
   // Send single transaction
   const sendSingleTransaction = async () => {
     if (!client || !singleTx.to) {
@@ -141,7 +172,7 @@ export default function TransactionManager() {
       
       console.log('Sending transaction with client:', {
         account: client.account.address,
-        chain: client.chain.name,
+        chain: client.chain?.name || 'Unknown',
       });
       
       const hash = await client.sendUserOperation({
@@ -201,8 +232,8 @@ export default function TransactionManager() {
       const userOps = validTxs.map((tx, index) => {
         try {
           return prepareTransaction(tx);
-        } catch (error) {
-          throw new Error(`Transaction ${index + 1}: ${error.message}`);
+        } catch (error: any) {
+          throw new Error(`Transaction ${index + 1}: ${error.message || 'Unknown error'}`);
         }
       });
 
@@ -215,7 +246,7 @@ export default function TransactionManager() {
       
       console.log('Sending batch with client:', {
         account: client.account.address,
-        chain: client.chain.name,
+        chain: client.chain?.name || 'Unknown',
         batchSize: userOps.length,
       });
       
@@ -252,7 +283,7 @@ export default function TransactionManager() {
         status: 'failed',
         timestamp: Date.now(),
         error: error.message || 'Unknown error',
-        batchSize: validTxs.length,
+        batchSize: batchTxs.length,
       }, ...prev]);
     }
     setIsLoading(false);

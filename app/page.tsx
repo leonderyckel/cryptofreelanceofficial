@@ -61,19 +61,25 @@ export default function Home() {
                         <div className="space-y-2">
                           <button 
                             onClick={() => setActiveTab("transactions")}
-                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r 
+                                       hover:from-primary/10 hover:to-secondary/10 rounded-lg 
+                                       text-sm hover-lift transition-all duration-200"
                           >
                             💸 Send Transactions
                           </button>
                           <button 
                             onClick={() => setActiveTab("assets")}
-                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r 
+                                       hover:from-primary/10 hover:to-secondary/10 rounded-lg 
+                                       text-sm hover-lift transition-all duration-200"
                           >
                             🎨 Manage NFTs & Tokens
                           </button>
                           <button 
                             onClick={() => setActiveTab("automation")}
-                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r 
+                                       hover:from-primary/10 hover:to-secondary/10 rounded-lg 
+                                       text-sm hover-lift transition-all duration-200"
                           >
                             🔐 Session Keys
                           </button>
@@ -87,19 +93,25 @@ export default function Home() {
                         <div className="space-y-2">
                           <button 
                             onClick={() => setActiveTab("multisig")}
-                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r 
+                                       hover:from-primary/10 hover:to-secondary/10 rounded-lg 
+                                       text-sm hover-lift transition-all duration-200"
                           >
                             🛡️ Multisig Governance
                           </button>
                           <button 
                             onClick={() => setActiveTab("transactions")}
-                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r 
+                                       hover:from-primary/10 hover:to-secondary/10 rounded-lg 
+                                       text-sm hover-lift transition-all duration-200"
                           >
                             ⚡ Batch Transactions
                           </button>
                           <button 
                             onClick={() => setActiveTab("transactions")}
-                            className="w-full text-left p-3 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 rounded-lg text-sm hover-lift transition-all duration-200"
+                            className="w-full text-left p-3 hover:bg-gradient-to-r 
+                                       hover:from-primary/10 hover:to-secondary/10 rounded-lg 
+                                       text-sm hover-lift transition-all duration-200"
                           >
                             💨 Gas Sponsorship
                           </button>

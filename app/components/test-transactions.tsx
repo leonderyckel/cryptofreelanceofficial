@@ -38,7 +38,7 @@ export default function TestTransactions() {
       // Self-transaction with 0 value (should always work)
       const userOp = {
         target: client.account.address,
-        data: "0x",
+        data: "0x" as `0x${string}`,
         value: BigInt(0),
       };
 
@@ -87,7 +87,7 @@ export default function TestTransactions() {
       // Very small transfer (0.001 ETH) to test address
       const userOp = {
         target: testRecipient as `0x${string}`,
-        data: "0x",
+        data: "0x" as `0x${string}`,
         value: parseEther("0.001"), // 0.001 ETH
       };
 
@@ -143,12 +143,12 @@ export default function TestTransactions() {
       const userOps = [
         {
           target: client.account.address,
-          data: "0x",
+          data: "0x" as `0x${string}`,
           value: BigInt(0),
         },
         {
           target: testRecipient as `0x${string}`,
-          data: "0x",
+          data: "0x" as `0x${string}`,
           value: parseEther("0.0001"), // Very small amount
         }
       ];

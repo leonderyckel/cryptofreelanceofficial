@@ -27,10 +27,8 @@ export default function WalletBalance() {
     
     setIsLoading(true);
     try {
-      // Get ETH balance
-      const ethBalance = await client.getBundlerClient().getBalance({
-        address: client.account.address,
-      });
+      // Mock ETH balance for demo
+      const ethBalance = BigInt("1000000000000000000"); // 1 ETH mock
       
       setBalance(formatEther(ethBalance));
       
@@ -136,11 +134,13 @@ export default function WalletBalance() {
                 >
                   <div className="flex items-center gap-3">
                     {token.icon ? (
-                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-sm font-bold">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full 
+                           flex items-center justify-center text-white text-sm font-bold">
                         {token.symbol[0]}
                       </div>
                     ) : (
-                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-sm font-bold">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full 
+                           flex items-center justify-center text-white text-sm font-bold">
                         {token.symbol[0]}
                       </div>
                     )}

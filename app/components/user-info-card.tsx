@@ -72,7 +72,7 @@ export default function UserInfo() {
       // Try deployment with a simple self-transaction
       const userOp = {
         target: client.account.address,
-        data: "0x",
+        data: "0x" as `0x${string}`,
         value: BigInt(0),
       };
       
