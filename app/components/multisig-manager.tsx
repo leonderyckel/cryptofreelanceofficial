@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -127,7 +127,7 @@ export default function MultisigManager() {
   const [newProposal, setNewProposal] = useState({
     title: "",
     description: "",
-    type: "transfer" as const,
+    type: "transfer" as "transfer" | "addOwner" | "removeOwner" | "changeThreshold" | "custom",
     target: "",
     value: "",
     data: "0x",
@@ -219,15 +219,7 @@ export default function MultisigManager() {
     },
   ];
 
-  // Load multisig configuration
-  useEffect(() => {
-    if (client?.account?.address) {
-      loadMultisigConfig();
-      loadProposals();
-    }
-  }, [client?.account?.address]);
-
-  const loadMultisigConfig = async () => {
+  const loadMultisigConfig = useCallback(async () => {
     setIsLoading(true);
     try {
       // In a real app, this would query the multisig contract
@@ -236,16 +228,24 @@ export default function MultisigManager() {
       console.error("Failed to load multisig config:", error);
     }
     setIsLoading(false);
-  };
+  }, []);
 
-  const loadProposals = async () => {
+  const loadProposals = useCallback(async () => {
     try {
       // In a real app, this would query proposal events
       setProposals(mockProposals);
     } catch (error) {
       console.error("Failed to load proposals:", error);
     }
-  };
+  }, []);
+
+  // Load multisig configuration
+  useEffect(() => {
+    if (client?.account?.address) {
+      loadMultisigConfig();
+      loadProposals();
+    }
+  }, [client?.account?.address, loadMultisigConfig, loadProposals]);
 
   // Create new proposal
   const createProposal = async () => {

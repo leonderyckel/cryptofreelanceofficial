@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -173,15 +174,7 @@ export default function NFTTokenManager() {
     },
   ];
 
-  // Load NFTs and tokens
-  useEffect(() => {
-    if (client?.account?.address) {
-      loadNFTs();
-      loadTokens();
-    }
-  }, [client?.account?.address]);
-
-  const loadNFTs = async () => {
+  const loadNFTs = useCallback(async () => {
     setIsLoading(true);
     try {
       // In a real app, this would call Alchemy NFT API
@@ -191,9 +184,9 @@ export default function NFTTokenManager() {
       console.error("Failed to load NFTs:", error);
     }
     setIsLoading(false);
-  };
+  }, []);
 
-  const loadTokens = async () => {
+  const loadTokens = useCallback(async () => {
     try {
       // In a real app, this would call Alchemy Token API
       // const response = await alchemy.core.getTokensForOwner(client.account.address);
@@ -201,7 +194,15 @@ export default function NFTTokenManager() {
     } catch (error) {
       console.error("Failed to load tokens:", error);
     }
-  };
+  }, []);
+
+  // Load NFTs and tokens
+  useEffect(() => {
+    if (client?.account?.address) {
+      loadNFTs();
+      loadTokens();
+    }
+  }, [client?.account?.address, loadNFTs, loadTokens]);
 
   // Transfer token
   const transferToken = async () => {
@@ -241,7 +242,10 @@ export default function NFTTokenManager() {
     setIsLoading(true);
     try {
       // ERC-721 safeTransferFrom
-      const transferData = `0x42842e0e${client.account.address.slice(2).padStart(64, '0')}${transferForm.to.slice(2).padStart(64, '0')}${parseInt(transferForm.tokenId).toString(16).padStart(64, '0')}`;
+      const fromAddress = client.account.address.slice(2).padStart(64, '0');
+      const toAddress = transferForm.to.slice(2).padStart(64, '0');
+      const tokenIdHex = parseInt(transferForm.tokenId).toString(16).padStart(64, '0');
+      const transferData = `0x42842e0e${fromAddress}${toAddress}${tokenIdHex}`;
       
       const hash = await client.sendUserOperation({
         uo: {
@@ -390,10 +394,11 @@ export default function NFTTokenManager() {
                   {nfts.map((nft) => (
                     <Card key={`${nft.contractAddress}-${nft.tokenId}`} className="overflow-hidden">
                       <div className="aspect-square bg-muted relative">
-                        <img
+                        <Image
                           src={nft.image}
                           alt={nft.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                         <div className="absolute top-2 right-2">
                           <DropdownMenu>
@@ -458,7 +463,7 @@ export default function NFTTokenManager() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
                           {token.logo ? (
-                            <img src={token.logo} alt={token.symbol} className="w-6 h-6" />
+                            <Image src={token.logo} alt={token.symbol} width={24} height={24} />
                           ) : (
                             <Coins className="h-5 w-5" />
                           )}
@@ -773,11 +778,12 @@ export default function NFTTokenManager() {
               <DialogDescription>{selectedNFT.collection}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-                <img
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden relative">
+                <Image
                   src={selectedNFT.image}
                   alt={selectedNFT.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
               <div>

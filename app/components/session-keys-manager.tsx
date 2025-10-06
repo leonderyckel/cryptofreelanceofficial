@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -141,7 +141,7 @@ export default function SessionKeysManager() {
   });
   
   const [newPermission, setNewPermission] = useState({
-    type: "transfer" as const,
+    type: "transfer" as "transfer" | "contract_call" | "token_approval" | "nft_transfer" | "custom",
     target: "",
     selector: "",
     maxValue: "",
@@ -254,16 +254,7 @@ export default function SessionKeysManager() {
     },
   ];
 
-  // Load data
-  useEffect(() => {
-    if (client?.account?.address) {
-      loadSessionKeys();
-      loadActivities();
-      loadGasPolicies();
-    }
-  }, [client?.account?.address]);
-
-  const loadSessionKeys = async () => {
+  const loadSessionKeys = useCallback(async () => {
     setIsLoading(true);
     try {
       // In a real app, this would query the session key plugin
@@ -272,25 +263,34 @@ export default function SessionKeysManager() {
       console.error("Failed to load session keys:", error);
     }
     setIsLoading(false);
-  };
+  }, []);
 
-  const loadActivities = async () => {
+  const loadActivities = useCallback(async () => {
     try {
       // In a real app, this would query session activity events
       setActivities(mockActivities);
     } catch (error) {
       console.error("Failed to load activities:", error);
     }
-  };
+  }, []);
 
-  const loadGasPolicies = async () => {
+  const loadGasPolicies = useCallback(async () => {
     try {
       // In a real app, this would query gas policies
       setGasPolicies(mockGasPolicies);
     } catch (error) {
       console.error("Failed to load gas policies:", error);
     }
-  };
+  }, []);
+
+  // Load data
+  useEffect(() => {
+    if (client?.account?.address) {
+      loadSessionKeys();
+      loadActivities();
+      loadGasPolicies();
+    }
+  }, [client?.account?.address, loadSessionKeys, loadActivities, loadGasPolicies]);
 
   // Create session key
   const createSessionKey = async () => {
@@ -451,7 +451,7 @@ export default function SessionKeysManager() {
             <div className="text-center">
               <Badge variant="outline" className="mb-2 w-full">
                 <Activity className="h-3 w-3 mr-1" />
-                Today's Usage
+                Today&apos;s Usage
               </Badge>
               <p className="text-xs text-muted-foreground">
                 {activities.filter(a => a.timestamp > Date.now() - 86400000).length} transactions
