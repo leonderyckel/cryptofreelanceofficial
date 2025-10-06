@@ -123,76 +123,105 @@ export default function TransactionManager() {
 
   // Send single transaction
   const sendSingleTransaction = async () => {
-    if (!client || !singleTx.to) return;
+    if (!client || !singleTx.to) {
+      console.error('Missing client or recipient address');
+      return;
+    }
     
     setIsLoading(true);
     try {
-      const userOp = {
-        target: singleTx.to as `0x${string}`,
-        data: singleTx.data as `0x${string}`,
-        value: singleTx.value ? parseEther(singleTx.value) : BigInt(0),
-      };
-
-      console.log("Sending single transaction:", userOp);
+      console.log('Preparing single transaction...');
+      const userOp = prepareTransaction(singleTx);
+      console.log('UserOp prepared:', userOp);
+      
+      // Validate client is ready
+      if (!client.account?.address) {
+        throw new Error('Smart account not deployed. Please deploy your wallet first.');
+      }
+      
+      console.log('Sending transaction with client:', {
+        account: client.account.address,
+        chain: client.chain.name,
+      });
       
       const hash = await client.sendUserOperation({
         uo: userOp,
-        ...(gasSettings.sponsor && { 
-          // Gas sponsorship enabled through policy
-        }),
-        ...(gasSettings.payWithToken && gasSettings.tokenAddress && {
-          // Pay gas with token
-          paymasterAndData: gasSettings.tokenAddress,
-        }),
+        account: client.account,
       });
 
-      console.log("Transaction sent:", hash);
+      console.log('Transaction sent successfully:', hash);
       
-      // Add to pending transactions
-      setPendingTxs(prev => [...prev, {
+      // Wait for transaction receipt
+      const receipt = await client.waitForUserOperationTransaction(hash);
+      console.log('Transaction confirmed:', receipt);
+      
+      // Add to transaction history
+      setTxHistory(prev => [{
         hash,
         type: 'single',
-        status: 'pending',
+        status: 'confirmed',
         timestamp: Date.now(),
+        receipt,
         ...userOp,
-      }]);
+      }, ...prev]);
 
       // Reset form
       setSingleTx({ to: "", value: "", data: "0x", gasToken: "ETH" });
       
-    } catch (error) {
-      console.error("Failed to send transaction:", error);
+    } catch (error: any) {
+      console.error('Transaction failed:', error);
+      setTxHistory(prev => [{
+        hash: 'failed-' + Date.now(),
+        type: 'single',
+        status: 'failed',
+        timestamp: Date.now(),
+        error: error.message || 'Unknown error',
+        ...singleTx,
+      }, ...prev]);
     }
     setIsLoading(false);
   };
 
   // Send batch transactions
   const sendBatchTransactions = async () => {
-    if (!client || batchTxs.length === 0) return;
+    if (!client || batchTxs.length === 0) {
+      console.error('Missing client or no transactions to batch');
+      return;
+    }
     
     setIsLoading(true);
     try {
-      const userOps = batchTxs
-        .filter(tx => tx.to && tx.to.trim() !== "")
-        .map(tx => ({
-          target: tx.to as `0x${string}`,
-          data: tx.data as `0x${string}`,
-          value: tx.value ? parseEther(tx.value) : BigInt(0),
-        }));
-
-      if (userOps.length === 0) {
-        console.error("No valid transactions to batch");
-        setIsLoading(false);
-        return;
+      console.log('Preparing batch transactions...');
+      
+      const validTxs = batchTxs.filter(tx => tx.to && tx.to.trim() !== "");
+      if (validTxs.length === 0) {
+        throw new Error('No valid transactions to batch');
       }
+      
+      const userOps = validTxs.map((tx, index) => {
+        try {
+          return prepareTransaction(tx);
+        } catch (error) {
+          throw new Error(`Transaction ${index + 1}: ${error.message}`);
+        }
+      });
 
-      console.log("Sending batch transactions:", userOps);
+      console.log('Batch UserOps prepared:', userOps);
+      
+      // Validate client is ready
+      if (!client.account?.address) {
+        throw new Error('Smart account not deployed. Please deploy your wallet first.');
+      }
+      
+      console.log('Sending batch with client:', {
+        account: client.account.address,
+        chain: client.chain.name,
+        batchSize: userOps.length,
+      });
       
       const hash = await client.sendUserOperation({
         uo: userOps,
-        ...(gasSettings.sponsor && { 
-          // Gas sponsorship enabled through policy
-        }),
+        account: client.account,
       });
 
       console.log('Batch transactions sent successfully:', hash);

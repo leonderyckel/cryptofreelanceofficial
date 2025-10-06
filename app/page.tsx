@@ -13,6 +13,8 @@ import TransactionManager from "./components/transaction-manager";
 import NFTTokenManager from "./components/nft-token-manager";
 import MultisigManager from "./components/multisig-manager";
 import SessionKeysManager from "./components/session-keys-manager";
+import TestTransactions from "./components/test-transactions";
+import WalletBalance from "./components/wallet-balance";
 
 export default function Home() {
   const signerStatus = useSignerStatus();
@@ -32,19 +34,21 @@ export default function Home() {
         <main className="container mx-auto px-4 py-8">
           {isConnected ? (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 mb-8">
+              <TabsList className="glass-effect grid w-full grid-cols-7 mb-8 p-2 rounded-xl border-0 shadow-lg">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="transactions">Transactions</TabsTrigger>
                 <TabsTrigger value="assets">Assets</TabsTrigger>
                 <TabsTrigger value="multisig">Multisig</TabsTrigger>
                 <TabsTrigger value="automation">Automation</TabsTrigger>
                 <TabsTrigger value="mint">Mint NFT</TabsTrigger>
+                <TabsTrigger value="test">🧪 Test</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-8">
                 <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
                   <div className="flex flex-col gap-8">
                     <UserInfoCard />
+                    <WalletBalance />
                     <LearnMore />
                   </div>
                   <div className="space-y-6">
@@ -128,6 +132,16 @@ export default function Home() {
                     <UserInfoCard />
                   </div>
                   <NftMintCard />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="test" className="animate-slide-up">
+                <div className="grid gap-8 md:grid-cols-[2fr_1fr]">
+                  <TestTransactions />
+                  <div className="flex flex-col gap-8">
+                    <UserInfoCard />
+                    <WalletBalance />
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>

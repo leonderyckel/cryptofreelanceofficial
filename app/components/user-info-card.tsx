@@ -124,7 +124,7 @@ export default function UserInfo() {
     } finally {
       setIsDeploying(false);
     }
-  }, [client, isDeploying, checkWalletDeployment, retryCount]);
+  }, [client, isDeploying, checkWalletDeployment, retryCount, toast]);
 
   // Auto-deploy Smart Wallet for EOA users
   useEffect(() => {
