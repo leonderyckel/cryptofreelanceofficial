@@ -50,6 +50,10 @@ export default function SimpleTransactionTest() {
       // Send without gas sponsorship to avoid paymaster issues
       const hash = await client.sendUserOperation({
         uo: userOp,
+        // Explicitly disable gas sponsorship
+        overrides: {
+          paymasterAndData: "0x",
+        },
       });
 
       console.log("Transaction hash:", hash);
@@ -158,6 +162,10 @@ export default function SimpleTransactionTest() {
 
       const hash = await client.sendUserOperation({
         uo: userOp,
+        // Explicitly disable gas sponsorship for self-transaction
+        overrides: {
+          paymasterAndData: "0x",
+        },
       });
 
       console.log("Self transaction hash:", hash);
