@@ -10,7 +10,7 @@ import Header from "./components/header";
 import LearnMore from "./components/learn-more";
 import DebugConnection from "./components/debug-connection";
 import TransactionManager from "./components/transaction-manager";
-import NFTTokenManager from "./components/nft-token-manager";
+import AdvancedTokenDashboard from "./components/advanced-token-dashboard";
 import MultisigManager from "./components/multisig-manager";
 import SessionKeysManager from "./components/session-keys-manager";
 import TestTransactions from "./components/test-transactions";
@@ -131,7 +131,7 @@ export default function Home() {
               </TabsContent>
 
               <TabsContent value="assets" className="animate-slide-up">
-                <NFTTokenManager />
+                <AdvancedTokenDashboard />
               </TabsContent>
 
               <TabsContent value="multisig" className="animate-slide-up">
