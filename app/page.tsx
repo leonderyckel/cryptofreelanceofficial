@@ -18,6 +18,7 @@ import WalletBalance from "./components/wallet-balance";
 import SimpleTransactionTest from "./components/simple-transaction-test";
 import TransactionDebugger from "./components/transaction-debugger";
 import NoSponsorshipTest from "./components/no-sponsorship-test";
+import WalletDeploymentTest from "./components/wallet-deployment-test";
 
 export default function Home() {
   const signerStatus = useSignerStatus();
@@ -152,8 +153,11 @@ export default function Home() {
 
               <TabsContent value="test" className="animate-slide-up">
                 <div className="space-y-8">
-                  <div className="grid gap-6 md:grid-cols-[1fr_1fr_1fr]">
+                  <div className="grid gap-6 md:grid-cols-[1fr_1fr]">
+                    <WalletDeploymentTest />
                     <TransactionDebugger />
+                  </div>
+                  <div className="grid gap-6 md:grid-cols-[1fr_1fr]">
                     <SimpleTransactionTest />
                     <NoSponsorshipTest />
                   </div>
