@@ -47,6 +47,14 @@ const POPULAR_TOKENS = [
       logo: "/tokens/eth.png"
     },
     {
+      address: "0xb1D4538B4571d411F07960EF2838Ce337FE1E80E", // LINK Sepolia
+      name: "Chainlink Token",
+      symbol: "LINK",
+      decimals: 18,
+      network: 'sepolia' as const,
+      logo: "/tokens/link.png"
+    },
+    {
       address: "0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05", // USDC Sepolia
       name: "USD Coin",
       symbol: "USDC", 
@@ -135,44 +143,127 @@ export default function AdvancedTokenDashboard() {
         console.error("Error fetching ETH balance:", ethError);
       }
 
-      // 2. Fetch popular token balances using alchemy_getTokenBalances
+      // 2. Fetch ALL token balances (not just popular ones)
       try {
-        const tokenAddresses = POPULAR_TOKENS
-          .filter(token => !token.isNative && token.network === 'sepolia')
-          .map(token => token.address);
+        // First, get all tokens owned by the address (no filter)
+        const allTokenBalances = await (client as any).request({
+          method: "alchemy_getTokenBalances",
+          params: [client.account.address]
+        });
 
-        if (tokenAddresses.length > 0) {
-          const tokenBalances = await (client as any).request({
-            method: "alchemy_getTokenBalances",
-            params: [client.account.address, tokenAddresses]
-          });
+        console.log("All token balances:", allTokenBalances);
 
-          if (tokenBalances?.tokenBalances) {
-            for (const tokenBalance of tokenBalances.tokenBalances) {
-              const tokenInfo = POPULAR_TOKENS.find(t => 
+        if (allTokenBalances?.tokenBalances) {
+          for (const tokenBalance of allTokenBalances.tokenBalances) {
+            if (tokenBalance.tokenBalance && tokenBalance.tokenBalance !== "0x0") {
+              // Check if it's a known token
+              const knownToken = POPULAR_TOKENS.find(t => 
                 t.address.toLowerCase() === tokenBalance.contractAddress.toLowerCase()
               );
-              
-              if (tokenInfo && tokenBalance.tokenBalance && tokenBalance.tokenBalance !== "0x0") {
+
+              if (knownToken) {
+                // Use known token info
                 const balance = BigInt(tokenBalance.tokenBalance);
-                const formatted = formatUnits(balance, tokenInfo.decimals);
+                const formatted = formatUnits(balance, knownToken.decimals);
                 
                 tokenList.push({
                   address: tokenBalance.contractAddress,
-                  name: tokenInfo.name,
-                  symbol: tokenInfo.symbol,
-                  decimals: tokenInfo.decimals,
+                  name: knownToken.name,
+                  symbol: knownToken.symbol,
+                  decimals: knownToken.decimals,
                   balance: tokenBalance.tokenBalance,
                   balanceFormatted: formatted,
                   network: 'sepolia',
-                  logo: tokenInfo.logo
+                  logo: knownToken.logo
                 });
+              } else {
+                // Unknown token - fetch metadata
+                try {
+                  const tokenMetadata = await (client as any).request({
+                    method: "alchemy_getTokenMetadata",
+                    params: [tokenBalance.contractAddress]
+                  });
+
+                  console.log("Token metadata for", tokenBalance.contractAddress, ":", tokenMetadata);
+
+                  if (tokenMetadata?.symbol && tokenMetadata?.decimals !== null) {
+                    const balance = BigInt(tokenBalance.tokenBalance);
+                    const decimals = tokenMetadata.decimals || 18;
+                    const formatted = formatUnits(balance, decimals);
+                    
+                    tokenList.push({
+                      address: tokenBalance.contractAddress,
+                      name: tokenMetadata.name || tokenMetadata.symbol || "Unknown Token",
+                      symbol: tokenMetadata.symbol || "UNK",
+                      decimals: decimals,
+                      balance: tokenBalance.tokenBalance,
+                      balanceFormatted: formatted,
+                      network: 'sepolia'
+                    });
+                  }
+                } catch (metadataError) {
+                  console.error("Error fetching metadata for", tokenBalance.contractAddress, ":", metadataError);
+                  
+                  // Fallback for tokens without metadata
+                  const balance = BigInt(tokenBalance.tokenBalance);
+                  const formatted = formatUnits(balance, 18); // Assume 18 decimals
+                  
+                  tokenList.push({
+                    address: tokenBalance.contractAddress,
+                    name: "Unknown Token",
+                    symbol: "UNK",
+                    decimals: 18,
+                    balance: tokenBalance.tokenBalance,
+                    balanceFormatted: formatted,
+                    network: 'sepolia'
+                  });
+                }
               }
             }
           }
         }
       } catch (tokenError) {
-        console.error("Error fetching token balances:", tokenError);
+        console.error("Error fetching all token balances:", tokenError);
+        
+        // Fallback: try with known tokens only
+        const tokenAddresses = POPULAR_TOKENS
+          .filter(token => !token.isNative && token.network === 'sepolia')
+          .map(token => token.address);
+
+        if (tokenAddresses.length > 0) {
+          try {
+            const tokenBalances = await (client as any).request({
+              method: "alchemy_getTokenBalances",
+              params: [client.account.address, tokenAddresses]
+            });
+
+            if (tokenBalances?.tokenBalances) {
+              for (const tokenBalance of tokenBalances.tokenBalances) {
+                const tokenInfo = POPULAR_TOKENS.find(t => 
+                  t.address.toLowerCase() === tokenBalance.contractAddress.toLowerCase()
+                );
+                
+                if (tokenInfo && tokenBalance.tokenBalance && tokenBalance.tokenBalance !== "0x0") {
+                  const balance = BigInt(tokenBalance.tokenBalance);
+                  const formatted = formatUnits(balance, tokenInfo.decimals);
+                  
+                  tokenList.push({
+                    address: tokenBalance.contractAddress,
+                    name: tokenInfo.name,
+                    symbol: tokenInfo.symbol,
+                    decimals: tokenInfo.decimals,
+                    balance: tokenBalance.tokenBalance,
+                    balanceFormatted: formatted,
+                    network: 'sepolia',
+                    logo: tokenInfo.logo
+                  });
+                }
+              }
+            }
+          } catch (fallbackError) {
+            console.error("Fallback token fetch also failed:", fallbackError);
+          }
+        }
       }
 
       // 3. Add zero-balance popular tokens for display
