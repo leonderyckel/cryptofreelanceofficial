@@ -21,6 +21,7 @@ import {
 import { useSmartAccountClient, useUser } from "@account-kit/react";
 import { useToast } from "@/lib/hooks/use-toast";
 import { parseUnits, formatUnits, isAddress } from "viem";
+import PolygonDeposit from "./polygon-deposit";
 
 interface Token {
   address: string;
@@ -435,9 +436,10 @@ export default function AdvancedTokenDashboard() {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
               <TabsTrigger value="transfer">Transfer</TabsTrigger>
+              <TabsTrigger value="deposit">Deposit</TabsTrigger>
               <TabsTrigger value="market">Market</TabsTrigger>
             </TabsList>
 
@@ -618,6 +620,10 @@ export default function AdvancedTokenDashboard() {
                   )}
                 </Card>
               </div>
+            </TabsContent>
+
+            <TabsContent value="deposit" className="space-y-6 mt-6">
+              <PolygonDeposit />
             </TabsContent>
 
             <TabsContent value="market" className="space-y-6 mt-6">
